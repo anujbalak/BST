@@ -225,14 +225,60 @@ class Tree {
       throw new Error('Callback is null');
     }
     if (stackArray.length === 0) return;
-    let current = stackArray[stackArray.length-1];
-    while (current.left !== null) {
+    let current = stackArray[stackArray.length - 1];
+    if (current.left !== null) {
       stackArray.push(current.left);
-      current = stackArray[stackArray.length-1];
+      return this.inOrder(callback, stackArray);
     }
-    callback(current)
+    if (current.left === null) {
+      callback(current);
+      stackArray.pop();
+      if (current.right !== null) {
+        stackArray.push(current.right);
+        return this.inOrder(callback, stackArray);
+      }
+      if (stackArray.length > 0) {
+        current = stackArray[stackArray.length - 1];
+      
+        while (current.right === null) {
+          callback(current);
+          stackArray.pop();
+          current = stackArray[stackArray.length - 1]
+        }
+        callback(current);
+        stackArray.pop(current);
+        stackArray.push(current.right);
+        return this.inOrder(callback, stackArray);
+      }
+    }
+  }
+
+  preOrder(callback, stackArray = [this.root]) {
+    if (callback === null || callback === undefined) {
+      throw new Error('Callback is null');
+    }
+    if (stackArray.length === 0) return;
+    let current = stackArray[stackArray.length - 1];
+    if (current === null) return;
+    callback(current);
     stackArray.pop();
-    current = stackArray[stackArray.length-1];
+    if (current.right !== null) {
+      stackArray.push(current.right);
+      if (current.left !== null) {
+        stackArray.push(current.left);
+      }
+      return this.preOrder(callback, stackArray);
+    } else if (current.right === null) {
+      if (current.left !== null) {
+        stackArray.push(current);
+        return this.preOrder(callback, stackArray);
+      }
+      callback(current);
+      stackArray.pop();
+      current = stackArray[stackArray.length - 1];
+      callback(current);
+      return this.preOrder(callback, stackArray);
+    } 
   }
 }
 
@@ -248,11 +294,10 @@ function buildLinearArrayOf(n) {
 let array = buildLinearArrayOf(10);
 
 let bst = new Tree();
-let list = [4, 5, 0, 3, 2, 1]
+let list = [4, -4, 0, 3, 100, 1]
 bst.buildTree(array)
-bst.insert(0)
 
-let call = bst.inOrder((node) => {
+let call = bst.preOrder((node) => {
   console.log(node.data);
 })
 
