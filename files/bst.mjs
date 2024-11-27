@@ -83,19 +83,76 @@ class Tree {
   }
 
   deleteItem(value) {
-    if (this.root === value) {
-      this.root.data = null;
-      return;
+    if (this.root.data === value) {
+      if (this.root.left === null && this.root.right === null) {
+        this.root.data = null;
+        return;
+      }
+      let current = this.root
+      if (current.left !== null) {
+        if (current.right !== null) {
+          current = current.left;
+          while (current.right !== null) {
+            current = current.right;
+          }
+          current.right = this.root.right;
+        }
+        this.root = this.root.left;
+        return;
+      } else {
+        this.root = this.root.right;
+        return;
+      }
     }
     let current = this.root
-    
     function remove(current, prevElement = null) {
       if (current.data === value) {
         if (current.left === null && current.right === null) {
+          if (prevElement.left !== null) {
+            if (prevElement.left.data === value) {
+              prevElement.left = null;
+              return;
+            }
+          }
           prevElement.right = null 
           return;
         }
+        ///////////////////////delete
+        if (prevElement.left !== null && prevElement.left.data === value) {
+          if (current.left !== null) {
+            if (current.right !== null) {
+              current = current.left;
+              while (current.right !== null) {
+                current = current.right;
+              }
+              current.right = prevElement.left.right;
+            }
+            prevElement.left = prevElement.left.left
+            return;
+          } else {
+            prevElement.left = current.right;
+            return;
+          }
+        } else {
+          if (current.left !== null) {
+            if (current.right !== null) {
+              current = current.left
+              while (current.right !== null) {
+                current = current.right;
+              }
+              current.right = prevElement.right.right;
+            }
+            prevElement.right = prevElement.right.left;
+            return
+          } else {
+            prevElement.right = current.right;
+            return
+          }
+        }  
+        ///////////////////////////
       }
+      
+      ///recursion
       if (current.data > value) {
         if (current.left !== null) return remove(current.left, current);
         return 'No such value';
@@ -106,21 +163,130 @@ class Tree {
     }
     remove(current);
   }
+
+  find(value, current = this.root) {
+    if (current.data === value) {
+      return current;
+    }
+    if (value < current.data) {
+      return this.find(value, current.left);
+    } else if(value > current.data) {
+      return this.find(value, current.right);
+    } else {
+      return 'No such Value';
+    }
+  }
+
+  levelOrderRec(callback, queueArray = [this.root]) {
+    if (callback === null || callback === undefined) {
+      throw new Error('Callback is null');
+    }
+    if (queueArray.length === 0) return;
+    let current = queueArray[0];
+    callback(current);
+    queueArray.shift()
+    if (current.left !== null && current.right === null) {
+      queueArray.push(current.left);
+      return this.levelOrderRec(callback, queueArray);
+    } else if(current.right !== null && current.left === null) {
+      queueArray.push(current.right);
+      return this.levelOrderRec(callback, queueArray);
+    } else if(current.right !== null && current.left !== null) {
+      queueArray.push(current.left, current.right);
+      return this.levelOrderRec(callback, queueArray);
+    } else {
+      return this.levelOrderRec(callback, queueArray)
+    }
+  }
+
+  levelOrder(callback) {
+    if (callback === null || callback === undefined) {
+      throw new Error('Callback is null');
+    }
+    let queueArray = [this.root];
+    while (queueArray.length !== 0) {
+      let current = queueArray[0];
+      callback(current);
+      queueArray.shift();
+      if (current.left !== null && current.right === null) {
+        queueArray.push(current.left);
+      } else if(current.right !== null && current.left === null) {
+        queueArray.push(current.right);
+      } else if(current.right !== null && current.left !== null) {
+        queueArray.push(current.left, current.right);
+      } else {
+        //
+      }
+    }
+  }
+
+  inOrder(callback, stackArray = [this.root]) {
+    if (callback === null || callback === undefined) {
+      throw new Error('Callback is null');
+    }
+    if (stackArray.length === 0) return;
+    let current = stackArray[stackArray.length-1];
+    while (current.left !== null) {
+      stackArray.push(current.left);
+      current = stackArray[stackArray.length-1];
+    }
+    callback(current)
+    stackArray.pop();
+    current = stackArray[stackArray.length-1];
+  }
 }
 
 
+function buildLinearArrayOf(n) {
+  let array = []
+  for (let i = 1; i <= n; i++) {
+    array.push(i);
+  }
+  return array;
+}
+
+let array = buildLinearArrayOf(10);
+
 let bst = new Tree();
-bst.insert(5)
-bst.insert(2)
-bst.insert(1)
-bst.insert(3)
-bst.insert(6);
-bst.insert(8);
-bst.insert(10);
-bst.insert(4);
-bst.insert(9)
-bst.deleteItem(4)
-console.log(bst.root.left);
+let list = [4, 5, 0, 3, 2, 1]
+bst.buildTree(array)
+bst.insert(0)
+
+let call = bst.inOrder((node) => {
+  console.log(node.data);
+})
+
+
+// bst.insert(5)
+// bst.insert(2)
+// bst.insert(1)
+// bst.insert(3)
+// bst.insert(6);
+// bst.insert(8);
+// bst.insert(10);
+// bst.insert(4);
+// bst.insert(9);
+// bst.insert(1.5)
+// bst.insert(11);
+// bst.insert(-3);
+// bst.insert(-5)
+// bst.insert(0);
+// bst.insert(-1);
+// bst.insert(-2)
+// bst.insert(-0.5)
+// bst.insert(12);
+// bst.insert(9.1);
+// bst.insert(9.5);
+// bst.insert(9.7);
+// bst.deleteItem(5);
+// bst.deleteItem(2);
+// bst.deleteItem(1)
+// bst.deleteItem(-3)
+// bst.deleteItem(-5)
+// bst.deleteItem(0)
+// bst.deleteItem(-1)
+// bst.deleteItem(-2)
+// console.log(bst.root);
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
     return;
@@ -133,3 +299,5 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
   }
 };
+
+prettyPrint(bst.root);
