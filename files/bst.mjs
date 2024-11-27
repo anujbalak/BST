@@ -271,12 +271,7 @@ class Tree {
     } else if (current.right === null) {
       if (current.left !== null) {
         stackArray.push(current);
-        return this.preOrder(callback, stackArray);
       }
-      callback(current);
-      stackArray.pop();
-      current = stackArray[stackArray.length - 1];
-      callback(current);
       return this.preOrder(callback, stackArray);
     } 
   }
@@ -291,11 +286,11 @@ function buildLinearArrayOf(n) {
   return array;
 }
 
-let array = buildLinearArrayOf(10);
+let array = buildLinearArrayOf(20);
 
 let bst = new Tree();
 let list = [4, -4, 0, 3, 100, 1]
-bst.buildTree(array)
+bst.buildTree(list)
 
 let call = bst.preOrder((node) => {
   console.log(node.data);
