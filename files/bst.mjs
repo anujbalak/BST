@@ -275,6 +275,45 @@ class Tree {
       return this.preOrder(callback, stackArray);
     } 
   }
+
+  postOrder(callback, current = this.root) {
+    if (callback === undefined || callback === null) {
+      throw new Error('Callback is null or invalid.');
+    }
+
+    if (current === null) return;
+    return (
+      this.postOrder(callback, current.left),
+      this.postOrder(callback, current.right),
+      callback(current)
+    )
+  }
+
+  inOrderButSmart(callback, current = this.root) {
+    if (callback === undefined || callback === null) {
+      throw new Error('Callback is null or invalid.');
+    }
+
+    if (current === null) return;
+    return (
+      this.inOrderButSmart(callback, current.left),
+      this.inOrderButSmart(callback, current.right),
+      callback(current)
+    )
+  }
+
+  preOrderButSmart(callback, current = this.root) {
+    if (callback === undefined || callback === null) {
+      throw new Error('Callback is null or invalid.');
+    }
+
+    if (current === null) return;
+    return (
+      this.preOrderButSmart(callback, current.left),
+      this.preOrderButSmart(callback, current.right),
+      callback(current)
+    )
+  }
 }
 
 
@@ -286,13 +325,13 @@ function buildLinearArrayOf(n) {
   return array;
 }
 
-let array = buildLinearArrayOf(20);
+let array = buildLinearArrayOf(10);
 
 let bst = new Tree();
 let list = [4, -4, 0, 3, 100, 1]
-bst.buildTree(list)
+bst.buildTree(array)
 
-let call = bst.preOrder((node) => {
+let call = bst.postOrder((node) => {
   console.log(node.data);
 })
 
