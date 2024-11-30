@@ -297,8 +297,8 @@ class Tree {
     if (current === null) return;
     return (
       this.inOrderButSmart(callback, current.left),
-      this.inOrderButSmart(callback, current.right),
-      callback(current)
+      callback(current),
+      this.inOrderButSmart(callback, current.right)
     )
   }
 
@@ -309,10 +309,43 @@ class Tree {
 
     if (current === null) return;
     return (
+      callback(current),
       this.preOrderButSmart(callback, current.left),
-      this.preOrderButSmart(callback, current.right),
-      callback(current)
+      this.preOrderButSmart(callback, current.right)
     )
+  }
+
+  height(node = this.root, count = 0, countArray = []) {
+    if (node == null) {
+      countArray.push(count);
+      return;
+    }
+
+    function returnHeight(array) {
+      let sorted = array.filter((item, index) => array.indexOf(item) === index);
+      sorted.sort();
+      let lastItem = sorted[sorted.length - 1] - 1;
+      return lastItem;
+    }
+    return (
+      this.height(node.left, count + 1, countArray),
+      this.height(node.right, count + 1, countArray),
+      returnHeight(countArray)
+    )
+  }
+
+  depth(node, current = this.root, depthCount = 0){
+    if (node == null) throw new Error('node is null');
+    if (current === node) {
+      return depthCount;
+    }
+    if (node.data < current.data) {
+      return this.depth(node, current.left, depthCount + 1);
+    } else if(node.data > current.data) {
+      return this.depth(node, current.right, depthCount + 1);
+    } else {
+      return 'No such Value';
+    }
   }
 }
 
@@ -331,9 +364,9 @@ let bst = new Tree();
 let list = [4, -4, 0, 3, 100, 1]
 bst.buildTree(array)
 
-let call = bst.postOrder((node) => {
-  console.log(node.data);
-})
+// let call = bst.postOrder((node) => {
+//   console.log(node.data);
+// })
 
 
 // bst.insert(5)
@@ -365,6 +398,7 @@ let call = bst.postOrder((node) => {
 // bst.deleteItem(0)
 // bst.deleteItem(-1)
 // bst.deleteItem(-2)
+
 // console.log(bst.root);
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
