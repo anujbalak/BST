@@ -67,7 +67,9 @@ class Tree {
     if (this.root === null || this.root === undefined) {
       this.root = new Node(value);
     }
-
+    if (value == null) {
+      throw new Error('Unvalid value');
+    }
     let current = this.root;
     function check(current) {
       if (current.data === value) return null;
@@ -347,70 +349,35 @@ class Tree {
       return 'No such Value';
     }
   }
+
+  isBalanced(stackArray = [this.root]) {
+    let current = stackArray[stackArray.length - 1];
+    if (stackArray.length === 0) return true;
+    if (current === null) return this.isBalanced(stackArray);
+    let leftHeight = this.height(current.left)
+    let rightHeight = this.height(current.right)
+    if (leftHeight == undefined) leftHeight = -1;
+    if (rightHeight == undefined) rightHeight = -1;
+    if (leftHeight - rightHeight > 1 || leftHeight - rightHeight < - 1) {
+      return false;
+    }
+    stackArray.pop();
+    if (current.left !== null && current.right !== null) {
+      stackArray.push(current.right, current.left);
+    }
+    return this.isBalanced(stackArray)
+  }
+
+  rebalance() {
+    if (this.isBalanced === true) return 'Tree is in balance';
+    let array = []
+    this.inOrder(element => {
+      array.push(element.data)
+    })
+    this.root = null;
+    this.buildTree(array);
+    return
+  }
 }
 
-
-function buildLinearArrayOf(n) {
-  let array = []
-  for (let i = 1; i <= n; i++) {
-    array.push(i);
-  }
-  return array;
-}
-
-let array = buildLinearArrayOf(10);
-
-let bst = new Tree();
-let list = [4, -4, 0, 3, 100, 1]
-bst.buildTree(array)
-
-// let call = bst.postOrder((node) => {
-//   console.log(node.data);
-// })
-
-
-// bst.insert(5)
-// bst.insert(2)
-// bst.insert(1)
-// bst.insert(3)
-// bst.insert(6);
-// bst.insert(8);
-// bst.insert(10);
-// bst.insert(4);
-// bst.insert(9);
-// bst.insert(1.5)
-// bst.insert(11);
-// bst.insert(-3);
-// bst.insert(-5)
-// bst.insert(0);
-// bst.insert(-1);
-// bst.insert(-2)
-// bst.insert(-0.5)
-// bst.insert(12);
-// bst.insert(9.1);
-// bst.insert(9.5);
-// bst.insert(9.7);
-// bst.deleteItem(5);
-// bst.deleteItem(2);
-// bst.deleteItem(1)
-// bst.deleteItem(-3)
-// bst.deleteItem(-5)
-// bst.deleteItem(0)
-// bst.deleteItem(-1)
-// bst.deleteItem(-2)
-
-// console.log(bst.root);
-const prettyPrint = (node, prefix = "", isLeft = true) => {
-  if (node === null) {
-    return;
-  }
-  if (node.right !== null) {
-    prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
-  }
-  console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
-  if (node.left !== null) {
-    prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
-  }
-};
-
-prettyPrint(bst.root);
+export { Tree }
